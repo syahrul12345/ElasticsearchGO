@@ -1,0 +1,8 @@
+FROM golang:latest
+WORKDIR /app
+RUN mkdir -p backend
+COPY ./backend /app/backend/
+WORKDIR /app/backend
+RUN go mod download
+RUN go build backend
+ENTRYPOINT ["./main"]
