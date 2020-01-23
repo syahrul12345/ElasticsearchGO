@@ -143,7 +143,7 @@ func (acc *Account) Login() (map[string]interface{}, bool) {
 	tokenString, _ := token.SignedString([]byte(os.Getenv("token_password")))
 	acc.Password = ""
 	acc.Token = tokenString
-	fmt.Println("User: " + acc.Email + " has succesfully logged in password")
+	fmt.Println("User: " + acc.Email + " has succesfully logged in.")
 	resp := utils.Message(true, "Succesfully logged in")
 	resp["account"] = acc
 	return resp, ok

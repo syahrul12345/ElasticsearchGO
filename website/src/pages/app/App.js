@@ -1,19 +1,27 @@
-import React from 'react';
-import { Grid } from '@material-ui/core/'
-import Login from '../login'
+import React,{useState} from 'react'
 import DashBoard from '../dashboard'
+import Create from '../createaccount'
+import Login from '../login'
 import { BrowserRouter as Router,
         Switch ,
         Route} from 'react-router-dom'
 function App() {
+  // Set the global state
+  const [state,setState] = useState({
+    token:''
+  })
+  
   return (
     <Router>
       <Switch>
-        <Route path="/dashboard">
-          <DashBoard/>
+        <Route exact path="/create">
+          <Create globalState={state} setState={setState}/>
+        </Route>
+        <Route exact path="/dashboard">
+          <DashBoard globalState={state} setState={setState}/>
         </Route>
         <Route exact path="/">
-          <Login/>
+          <Login globalState={state} setState={setState}/>
         </Route>
       </Switch>
     </Router>

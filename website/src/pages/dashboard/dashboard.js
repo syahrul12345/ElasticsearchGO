@@ -1,9 +1,9 @@
 import React from 'react';
 import { useState } from 'react'
-import { Grid, Button } from '@material-ui/core/'
+import { Grid, Button, Typography } from '@material-ui/core/'
 import SearchBar from '../../components/searchbar'
 
-function DashBoard() {
+function DashBoard(props) {
   const [search,setSearch] = useState('')
   const onHandleChange = (event) => {
     setSearch(event.target.value)
@@ -22,6 +22,9 @@ function DashBoard() {
     >
       <Grid item xs={12}>
         <SearchBar textFieldChangeHandler={onHandleChange}/>
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="subtitle2"> {props.globalState.token} </Typography>
       </Grid>
       <Grid item xs={12}>
         <Button onClick={startSearch}> Search </Button>

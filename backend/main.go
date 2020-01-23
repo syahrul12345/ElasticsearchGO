@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend/auth"
 	"backend/controller"
 	"fmt"
 	"net/http"
@@ -31,9 +32,11 @@ func start() {
 	// Routes to serve the webpage
 	router.PathPrefix("/").Handler(http.HandlerFunc(controller.Serve))
 
+	// Use the JWT middle ware
+	router.Use(auth.JwtAuthentication)
 	// Set the cors
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:8080"},
+		AllowedOrigins:   []string{"http://localhost:3000", "http://127.0.0.1:3000"},
 		AllowCredentials: true,
 	})
 	handler := c.Handler(router)

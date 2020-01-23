@@ -1,14 +1,15 @@
 import React from 'react'
-import {useState,useEffect} from 'react'
-import { Grid, TextField, Button, Typography } from '@material-ui/core'
-import {Redirect} from 'react-router-dom'
+import { useState,useEffect } from 'react'
+import { Grid,TextField,Button } from '@material-ui/core';
 import axios from 'axios'
-export default function Login(props) {
+import { Redirect } from 'react-router-dom';
+
+export default function CreateAccount(props) {
     const [redirect,setRedirect] = useState({
         status:false,
         token:''
     })
-    const [toDashboard,changeRedirect] = useState(false)
+    const [toLogin,changeRedirect] = useState(false)
     const [userInfo,setUserInfo] = useState({
         email:'',
         username:'',
@@ -18,24 +19,22 @@ export default function Login(props) {
     const handleChange = (input) => event =>{
         setUserInfo({...userInfo,[input]:event.target.value})
     }
-    const login = () => {
-        axios.post("/api/v1/login",userInfo)
+    const createAccount = () => {
+        axios.post("/api/v1/createAccount",userInfo)
             .then((res) => {
-                // Succesfull login
                 const token = res.data.account["Token"]
                 setRedirect({...redirect,"token":token})
                 changeRedirect(true)
             })
             .catch((err) => {
-                console.log(err)
                 console.log(err.response.data.message)
             })
     }
-
     useEffect(() => {
         // Handle redirect
         props.setState({...props.globalState,"token":redirect.token})
-    },[toDashboard])
+    },[toLogin])
+    
     return(
         <Grid
         container
@@ -54,20 +53,22 @@ export default function Login(props) {
             </Grid>
             <Grid item xs={12}>
                 <TextField
+                    label="Username"
+                    variant="outlined"
+                    style={{width:'50vw',marginBlockEnd:'1vh'}}
+                    onChange={handleChange('username')}/>
+            </Grid>
+            <Grid item xs={12}>
+                <TextField
                     label="Password"
                     variant="outlined"
                     style={{width:'50vw',marginBlockEnd:'1vh'}}
                     onChange={handleChange('password')}/>
             </Grid>
             <Grid item xs={12}>
-                <Button variant="filled" onClick={login}> LOGIN </Button>
+                <Button variant="outlined" onClick={createAccount}> Create Account </Button>
             </Grid>
-            <Grid item xs={12}>
-                <a href="/changePassword">
-                    <Typography variant="subtitle1"> Change your password </Typography>
-                </a>
-            </Grid>  
-            {toDashboard ? 
+            {toLogin ? 
                 <Redirect to="/dashboard"/>
                 : <></>
             }

@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 // Serve : Serves the built http files
@@ -47,6 +48,7 @@ var CreateAccount = func(w http.ResponseWriter, r *http.Request) {
 	// Create an account struct to hold the data
 	account := &models.Account{}
 	err := json.NewDecoder(r.Body).Decode(account)
+	fmt.Println(account)
 	if err != nil {
 		fmt.Println("Failed to create an account")
 		// Handle a generic error
@@ -57,11 +59,13 @@ var CreateAccount = func(w http.ResponseWriter, r *http.Request) {
 	// Create the account
 	message, ok := account.Create()
 	if !ok {
+		fmt.Println(message)
 		w.WriteHeader(http.StatusBadRequest)
 		utils.Respond(w, message)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
+	addCookie(w, message["account"].(*models.Account).Token)
 	utils.Respond(w, message)
 }
 
@@ -109,6 +113,7 @@ var ChangePassword = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
+	addCookie(w, message["account"].(*models.Account).Token)
 	utils.Respond(w, message)
 }
 
@@ -138,6 +143,7 @@ var Login = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
+	addCookie(w, message["account"].(*models.Account).Token)
 	utils.Respond(w, message)
 }
 
@@ -145,4 +151,14 @@ var Login = func(w http.ResponseWriter, r *http.Request) {
 var Search = func(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	utils.Respond(w, utils.Message(true, "Test Search API works"))
+}
+
+func addCookie(w http.ResponseWriter, jwString string) {
+	expire := time.Now().AddDate(0, 0, 1)
+	cookie := http.Cookie{
+		Name:    "jwt",
+		Value:   jwString,
+		Expires: expire,
+	}
+	http.SetCookie(w, &cookie)
 }

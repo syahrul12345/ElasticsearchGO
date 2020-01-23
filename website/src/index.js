@@ -2,8 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './pages/app/App';
+import { Provider } from 'react-redux'
 import * as serviceWorker from './serviceWorker';
-ReactDOM.render(<App />, document.getElementById('root'));
+const rootElement = document.getElementById('root')
+ReactDOM.render(<App />,rootElement)
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
