@@ -48,7 +48,6 @@ var CreateAccount = func(w http.ResponseWriter, r *http.Request) {
 	// Create an account struct to hold the data
 	account := &models.Account{}
 	err := json.NewDecoder(r.Body).Decode(account)
-	fmt.Println(account)
 	if err != nil {
 		fmt.Println("Failed to create an account")
 		// Handle a generic error
@@ -154,6 +153,7 @@ var Search = func(w http.ResponseWriter, r *http.Request) {
 	// {
 	// 		country:"singapore",
 	// }
+	fmt.Println("search detected")
 	type country struct {
 		Country string `json:"country"`
 	}

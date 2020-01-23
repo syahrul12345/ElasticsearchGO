@@ -49,7 +49,6 @@ function DashBoard(props) {
         spacing={2}
         style={{paddingLeft:'5%',paddingRight:'5%'}}>
           {routes.map((route) => {
-            console.log(route)
             return(
               <Grid item xs={3}>
                 <Card>
