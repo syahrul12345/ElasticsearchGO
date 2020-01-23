@@ -18,7 +18,6 @@ type Country struct {
 func init() {
 	countries := getData()
 	db := models.GetDB()
-	fmt.Println(&db)
 	schedulerTicker := time.NewTicker(4 * time.Second)
 	go func() {
 		for _, country := range countries {
