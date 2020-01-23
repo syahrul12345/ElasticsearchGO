@@ -31,7 +31,7 @@ type Country struct {
 // GetSearch Attemps to get the expercted result from the database when provided with a search term.
 var GetSearch = func(w http.ResponseWriter, r *http.Request) {
 	resp := make(map[string]interface{})
-	fmt.Println("Received a request to get data from the cahce...")
+
 	/*
 		Get the stored value for the search term
 		payload must be in the format of
@@ -42,6 +42,7 @@ var GetSearch = func(w http.ResponseWriter, r *http.Request) {
 
 	tempCountry := &Country{}
 	err := json.NewDecoder(r.Body).Decode(tempCountry)
+	fmt.Printf("Received a request to get data from the cahce for country %s\n", tempCountry.Country)
 	if err != nil {
 		fmt.Println("Failed to parse incoming payload...")
 		// Handle a generic error
@@ -56,17 +57,26 @@ var GetSearch = func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err.Error())
 	}
 	defer db.Close()
-	data, err := db.Get([]byte(tempCountry.Country), nil)
-	if err != nil {
-		// It doesnt exist in the database. Make a call to the main server
-		res := utils.CallDB(tempCountry.Country)
-		// Save the byte array in our leveldb
-		db.Put([]byte(tempCountry.Country), *res, nil)
 
-	}
+	data, err := db.Get([]byte(tempCountry.Country), nil)
 	respBody := &ResponseBody{}
-	json.Unmarshal(data, respBody)
-	resp["routelist"] = respBody.RouteList
+	if err != nil {
+		fmt.Printf("Data for %s not in cahce. Calling from skyscanner api\n", tempCountry.Country)
+		// It doesnt exist in the database. Make a call to the main server
+		data := utils.CallDB(tempCountry.Country)
+		// Save the byte array in our leveldb
+		db.Put([]byte(tempCountry.Country), *data, nil)
+		json.Unmarshal(*data, respBody)
+	} else {
+		fmt.Printf("Data for %s in cache.\n", tempCountry.Country)
+		json.Unmarshal(data, respBody)
+	}
+	if len(respBody.RouteList.Routes) == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		utils.Respond(w, utils.Message(false, "Invalid Request"))
+		return
+	}
+	resp["routeList"] = respBody.RouteList
 	w.WriteHeader(http.StatusOK)
 	utils.Respond(w, resp)
 	return

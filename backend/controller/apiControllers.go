@@ -153,13 +153,14 @@ var Search = func(w http.ResponseWriter, r *http.Request) {
 	// {
 	// 		country:"singapore",
 	// }
-	fmt.Println("search detected")
+
 	type country struct {
 		Country string `json:"country"`
 	}
 	// Create a temp object to hold the request payload
 	tempCountry := &utils.Country{}
 	err := json.NewDecoder(r.Body).Decode(tempCountry)
+	fmt.Printf("search detected for country %s\n", tempCountry.Country)
 	if err != nil {
 		// Handle a generic error
 		w.WriteHeader(http.StatusBadRequest)

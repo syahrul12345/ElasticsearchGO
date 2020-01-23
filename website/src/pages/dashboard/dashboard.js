@@ -13,7 +13,7 @@ function DashBoard(props) {
     setSearch({...search,"country":event.target.value})
   }
   const startSearch = () => {
-    axios.post("/api/v1/search",search)
+    axios.post("http://localhost:5556/cache/v1/getSearch",search)
       .then((res) => {
         setRoutes(res.data.routeList.Routes)
       })

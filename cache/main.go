@@ -4,7 +4,7 @@ import (
 	"cache/controller"
 	"fmt"
 	"net/http"
-
+	_ "cache/scheduler"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 )
@@ -25,7 +25,12 @@ func start() {
 	// Check if a search has been done before
 	router.HandleFunc("/cache/v1/getSearch", controller.GetSearch).Methods("POST")
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000", "http://127.0.0.1:3000"},
+		AllowedOrigins: []string{
+			"http://localhost:3000",
+			"http://127.0.0.1:3000",
+			"http://localhost:5555",
+			"http://127.0.0.1:5555",
+		},
 		AllowCredentials: true,
 	})
 	handler := c.Handler(router)
