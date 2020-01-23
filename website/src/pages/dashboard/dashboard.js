@@ -1,16 +1,29 @@
 import React from 'react';
-import { useState } from 'react'
-import { Grid, Button, Typography } from '@material-ui/core/'
+import { useState,useEffect } from 'react'
+import { Grid, Button, Typography, Card, CardContent } from '@material-ui/core/'
 import SearchBar from '../../components/searchbar'
+import axios from 'axios'
 
 function DashBoard(props) {
-  const [search,setSearch] = useState('')
+  const [search,setSearch] = useState({
+    country:''
+  })
+  const [routes,setRoutes] = useState([])
   const onHandleChange = (event) => {
-    setSearch(event.target.value)
+    setSearch({...search,"country":event.target.value})
   }
   const startSearch = () => {
-    console.log(`Searching for ${search}`)
+    axios.post("/api/v1/search",search)
+      .then((res) => {
+        setRoutes(res.data.routeList.Routes)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
   }
+  useEffect(() => {
+
+  },[routes])
   return (
     <Grid
     container
@@ -28,6 +41,27 @@ function DashBoard(props) {
       </Grid>
       <Grid item xs={12}>
         <Button onClick={startSearch}> Search </Button>
+      </Grid>
+      <Grid item xs={12}>
+        <Grid 
+        container 
+        direction="row"
+        spacing={2}
+        style={{paddingLeft:'5%',paddingRight:'5%'}}>
+          {routes.map((route) => {
+            console.log(route)
+            return(
+              <Grid item xs={3}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h3"> {route.DestinationId} </Typography>
+                    <Typography variant="h6"> SGD{route.Price} </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            )
+          })}
+        </Grid>
       </Grid>
     </Grid>
   );

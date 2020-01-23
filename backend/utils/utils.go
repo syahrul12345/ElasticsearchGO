@@ -2,6 +2,8 @@ package utils
 
 import (
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -17,4 +19,20 @@ func Message(status bool, message string) map[string]interface{} {
 func Respond(writer http.ResponseWriter, message map[string]interface{}) {
 	writer.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(writer).Encode(message)
+}
+
+//Request will make a request to an endpoint
+func Request(endpoint string) *[]byte {
+	resp, err := http.Get(endpoint)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	return &body
 }

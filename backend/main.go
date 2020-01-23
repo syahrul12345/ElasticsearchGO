@@ -27,7 +27,7 @@ func start() {
 	router.HandleFunc("/api/v1/createAccount", controller.CreateAccount).Methods("POST")
 	router.HandleFunc("/api/v1/changePassword", controller.ChangePassword).Methods("POST")
 	router.HandleFunc("/api/v1/login", controller.Login).Methods("POST")
-	router.HandleFunc("/api/v1/search", controller.Search).Methods("GET")
+	router.HandleFunc("/api/v1/search", controller.Search).Methods("POST")
 
 	// Routes to serve the webpage
 	router.PathPrefix("/").Handler(http.HandlerFunc(controller.Serve))

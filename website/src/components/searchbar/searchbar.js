@@ -6,8 +6,8 @@ export default function Searchbar(props) {
     return(
         <h1>
             <TextField
-            label="Search for flight"
-            id="Search flight"
+            label="Search for flights from a country"
+            id="Input Country"
             variant="outlined"
             onChange={props.textFieldChangeHandler}
             style={{width:'60vw'}}

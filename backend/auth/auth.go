@@ -21,7 +21,7 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 		//auth is the list of paths that requires authentication
 		auth := []string{
 			"/dashboard",
-			"/api/v1/search",
+			// "/api/v1/search",
 		}
 		// If the current path is not in the list of auth routes, we can serve the http.
 		requireAuth := false

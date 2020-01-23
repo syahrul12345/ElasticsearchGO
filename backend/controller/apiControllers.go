@@ -149,8 +149,32 @@ var Login = func(w http.ResponseWriter, r *http.Request) {
 
 // Search : Trigger a search function with the given parameters
 var Search = func(w http.ResponseWriter, r *http.Request) {
+	// Parse the incoming payload
+	// The account has to follow this format
+	// {
+	// 		country:"singapore",
+	// }
+	type country struct {
+		Country string `json:"country"`
+	}
+	// Create a temp object to hold the request payload
+	tempCountry := &utils.Country{}
+	err := json.NewDecoder(r.Body).Decode(tempCountry)
+	if err != nil {
+		// Handle a generic error
+		w.WriteHeader(http.StatusBadRequest)
+		utils.Respond(w, utils.Message(false, "Invalid Request"))
+		return
+	}
+	// Get the data from the skyscanner api
+	message, ok := tempCountry.GetRoutes()
+	if !ok {
+		w.WriteHeader(http.StatusBadRequest)
+		utils.Respond(w, utils.Message(false, "Invalid country provided"))
+		return
+	}
 	w.WriteHeader(http.StatusOK)
-	utils.Respond(w, utils.Message(true, "Test Search API works"))
+	utils.Respond(w, message)
 }
 
 func addCookie(w http.ResponseWriter, jwString string) {
