@@ -42,6 +42,7 @@ func start() {
 	// if err != nil {
 	// 	fmt.Print(err)
 	// }
+
 	fmt.Printf("Api end routes exposed on port %s\n", port)
 	fmt.Printf("Serving frontend on http://127.0.0.1:%s\n", port)
 	http.HandleFunc("/api/v1/createAccount", controller.CreateAccount)
