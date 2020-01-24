@@ -153,7 +153,6 @@ var Search = func(w http.ResponseWriter, r *http.Request) {
 	// {
 	// 		country:"singapore",
 	// }
-	fmt.Println("Serving")
 	type country struct {
 		Country string `json:"country"`
 	}

@@ -37,9 +37,6 @@ function DashBoard(props) {
         <SearchBar textFieldChangeHandler={onHandleChange}/>
       </Grid>
       <Grid item xs={12}>
-        <Typography variant="subtitle2"> {props.globalState.token} </Typography>
-      </Grid>
-      <Grid item xs={12}>
         <Button onClick={startSearch}> Search </Button>
       </Grid>
       <Grid item xs={12}>

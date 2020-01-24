@@ -21,7 +21,7 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 		//auth is the list of paths that requires authentication
 		auth := []string{
 			"/dashboard",
-			// "/api/v1/search",
+			"/api/v1/search",
 		}
 		// If the current path is not in the list of auth routes, we can serve the http.
 		requireAuth := false
@@ -69,7 +69,6 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 
 		//malformed token, return 403
 		if err != nil {
-			fmt.Println(err)
 			response = utils.Message(false, "Malformed auth token")
 			writer.WriteHeader(http.StatusForbidden)
 			writer.Header().Add("Content-Type", "application/json")
@@ -78,7 +77,6 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 		}
 		//token is invalid
 		if !token.Valid {
-			fmt.Println(token.Valid)
 			response = utils.Message(false, "Token is invalid")
 			writer.WriteHeader(http.StatusForbidden)
 			writer.Header().Add("Content-Type", "application/json")

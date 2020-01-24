@@ -36,7 +36,13 @@ func CallDB(country string) *[]byte {
 		fmt.Println(err.Error())
 		return nil
 	}
-	resp, err := http.Post("http://127.0.0.1:5555/api/v1/search", "application/json", bytes.NewBuffer(requestBody))
+	client := &http.Client{
+		CheckRedirect: nil,
+	}
+	req, err := http.NewRequest("POST", "http://127.0.0.1:5555/api/v1/search", bytes.NewBuffer(requestBody))
+	req.Header.Add("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjAsIlVzZXJOYW1lIjoidmNAYWNlcG9pbnRlci5zZyIsIkV4cCI6MTU3OTc4MDg3OX0.joOUnvUXRmbhZToFXjbdPTx6tKOb_RTxfHIJwYdQSnM")
+	resp, err := client.Do(req)
+	// resp, err := http.Post(, "application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
 		fmt.Println(err.Error())
 		return nil
@@ -48,6 +54,5 @@ func CallDB(country string) *[]byte {
 		fmt.Println(err.Error())
 		return nil
 	}
-
 	return &body
 }
