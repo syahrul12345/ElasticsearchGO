@@ -4,12 +4,16 @@ package controller
 import (
 	"backend/models"
 	"backend/utils"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
 // Serve : Serves the built http files
@@ -146,7 +150,7 @@ var Login = func(w http.ResponseWriter, r *http.Request) {
 	utils.Respond(w, message)
 }
 
-// Search : Trigger a search function with the given parameters
+// Search : Trigger a search function with the given parameters. When using GorillaMUX
 var Search = func(w http.ResponseWriter, r *http.Request) {
 	// Parse the incoming payload
 	// The account has to follow this format
@@ -177,6 +181,14 @@ var Search = func(w http.ResponseWriter, r *http.Request) {
 	utils.Respond(w, message)
 }
 
+//SearchAuth is used when using default http
+var SearchAuth = func(w http.ResponseWriter, r *http.Request) {
+	// Check the authentication token
+	miniAuth(w, r)
+	// use the same Search function
+	Search(w, r)
+}
+
 func addCookie(w http.ResponseWriter, jwString string) {
 	expire := time.Now().AddDate(0, 0, 1)
 	cookie := http.Cookie{
@@ -185,4 +197,49 @@ func addCookie(w http.ResponseWriter, jwString string) {
 		Expires: expire,
 	}
 	http.SetCookie(w, &cookie)
+}
+
+func miniAuth(writer http.ResponseWriter, request *http.Request) {
+	tokenHeader := request.Header.Get("Authorization")
+	response := make(map[string]interface{})
+	if tokenHeader == "" {
+		response = utils.Message(false, "Missing auth token")
+		writer.WriteHeader(http.StatusForbidden)
+		writer.Header().Add("Content-Type", "application/json")
+		utils.Respond(writer, response)
+		return
+	}
+	splitted := strings.Split(tokenHeader, " ") //The token normally comes in format `Bearer {token-body}`, we check if the retrieved token matched this requirement
+	if len(splitted) != 2 {
+		response = utils.Message(false, "Invalid/Malformed auth token")
+		writer.WriteHeader(http.StatusForbidden)
+		writer.Header().Add("Content-Type", "application/json")
+		utils.Respond(writer, response)
+		return
+	}
+	tokenPart := splitted[1] // the information that we're interested in
+	tk := &models.Token{}
+
+	token, err := jwt.ParseWithClaims(tokenPart, tk, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("token_password")), nil
+	})
+
+	//malformed token, return 403
+	if err != nil {
+		response = utils.Message(false, "Malformed auth token")
+		writer.WriteHeader(http.StatusForbidden)
+		writer.Header().Add("Content-Type", "application/json")
+		utils.Respond(writer, response)
+		return
+	}
+	//token is invalid
+	if !token.Valid {
+		response = utils.Message(false, "Token is invalid")
+		writer.WriteHeader(http.StatusForbidden)
+		writer.Header().Add("Content-Type", "application/json")
+		utils.Respond(writer, response)
+		return
+	}
+	ctx := context.WithValue(request.Context(), "user", tk.UserID)
+	request = request.WithContext(ctx)
 }
